@@ -23,11 +23,13 @@ Table::Table(int rows, int cols)
     szRow=rows;
     szCol=cols;
     records=new RowAray*[szRow];
+    for(int i=0;i<rows;i++)
+        records[i]= new RowAray(cols);
 }
 
 Table::~Table() 
 {
-    delete[]records;
+    delete records;
 }
 
 int Table::getSzCol()

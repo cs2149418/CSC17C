@@ -23,6 +23,8 @@ Triangle::Triangle(int size)
 {
     szRow=size;
     records=new RowAray*[size];
+    for(int i=0;i<size;i++)
+        records[i]=new RowAray(size);
 }
 
 Triangle::~Triangle() 
