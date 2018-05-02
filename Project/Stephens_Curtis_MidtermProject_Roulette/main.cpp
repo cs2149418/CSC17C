@@ -17,7 +17,8 @@
 #include <map>      //map
 #include <queue>  //queue
 #include <algorithm> //for algorithms
-#include <iterator>  //for iterators
+#include <iterator>  //iterators
+#include <valarray>  //for iterators
 #include "Player.h"  //player class
 #include "NegChoice.h" //input verification temp class
 
@@ -25,7 +26,7 @@ using namespace std; //Name-space under which system libraries exist
 
 //User Libraries
 
-//NO CONSTANTS!!!!!
+//No Constants
 
 //Function Prototypes
 int random(int, int);  //color random
@@ -33,7 +34,7 @@ int bonus();  //bonus function
 void dcatch(int entry, int max); //catch with max
 void tcatch(int entry, int min, int max);  //catch with min and max
 void rcatch(int entry);  //catch with no max
-int checkAcct(int valid[],int check, int size); //check for valid account
+int checkAcct(vector<int> &,int check, int size); //check for valid account
 
 //Execution begins here
 int main(int argc, char** argv) {
@@ -51,21 +52,24 @@ int main(int argc, char** argv) {
     //containers
     vector<int> storeWinner; //vector for winning numbers
     map<int,string> games;
-    queue<int> hotNum;
+    queue<int> winGames;
+    queue<int> loseGames;
    
     
     //accounts map set up
     int validAcct[20]={543, 785, 313, 432, 765, 345, 678, 409, 945,
                                 284, 851, 274, 345, 456, 235, 143, 178, 993, 
                                 169, 420}; //valid accts
+    vector<int> accted(std::begin(validAcct),std::end(validAcct));
     string names[20]={"Mark", "David", "Henry", "Kristina", "Ant$ ", 
                             "Herman", "Tyler", "Kohl", "Tracy", "Coby", "Nina", 
                             "Sean", "John", "Mia", "Thomas", "Nick", "Pat", 
                             "Eric", "Robert", "Curtis"};  //valid names
+    vector<string> named(std::begin(names),std::end(names));
     std::map<int,string> accts; //map
     for(int i=0;i<20;i++)   //assign map
     {
-        accts[validAcct[i]]=names[i];
+        accts[accted[i]]=named[i];
     }
 
     //Intro and set up
@@ -75,7 +79,7 @@ int main(int argc, char** argv) {
     //enter account
     cin>>acctNum;               //enter account number
     rcatch(acctNum);   //validate
-    results=checkAcct(validAcct,acctNum,20); //search map
+    results=checkAcct(accted,acctNum,20); //search map
     if(results==-1) //if not valid
     {
         cout<<"Not a valid account number, opening new account.\n"
@@ -108,21 +112,22 @@ int main(int argc, char** argv) {
     cout<<"Your bank is $"<<player.bankDisp()<<endl;
     
     //play
-    while(entry!=3)
+    do
     {
         //menu
         cout<<"\n\nWhat would you like to do?\n"
                 <<"1) Play by color\n"
                 <<"2) Play by number\n"
-                <<"3) Quit\n"
+                <<"3) User Info Menu\n"
+                <<"4) Quit\n"
                 <<"Choice: ";
         cin>>entry;
-        tcatch(entry,1,3);
+        tcatch(entry,1,4);
         //entry and validate input
-        while(entry<1||entry>3)
+        while(entry<1||entry>4)
         {
             cin>>entry;
-            tcatch(entry,1,3);
+            tcatch(entry,1,4);
         }
     
         //play by color
@@ -130,13 +135,13 @@ int main(int argc, char** argv) {
         {
             while(color!=4)
             {
-            cout<<"You chose to play by number!\n";
+            cout<<"You chose to play by color!\n";
             
             //winning number list
-            if(game!=1)
+            if(!storeWinner.empty())
             {
                 cout<<"\nWinning numbers so far: ";
-                for(int i=1;i<game;i++)
+                for(int i=0;i<storeWinner.size();i++)
                 {
                     cout<<storeWinner[i]<<" ";
                 }
@@ -224,6 +229,7 @@ int main(int argc, char** argv) {
                     player.addGame(game,win);
                 }
                 game++;    //add play
+                winGames.push(game); //add to queue
                 cout << "You have $" << player.bankDisp()
                          << " left. \n" << endl;      //funds left
             }
@@ -235,6 +241,7 @@ int main(int argc, char** argv) {
                 player.subBank(bet);
                 player.addGame(game,lose);
                 game++;  //add play
+                loseGames.push(game);
                 cout << "You have $" << player.bankDisp()
                          << " left. \n" << endl;      //funds left
             }
@@ -252,7 +259,7 @@ int main(int argc, char** argv) {
             if(game!=1)
             {
                 cout<<"\nWinning numbers so far: ";
-                for(int i=1;i<game;i++)
+                for(int i=0;i<storeWinner.size();i++)
                 {
                     cout<<storeWinner[i]<<" ";
                 }
@@ -340,84 +347,106 @@ int main(int argc, char** argv) {
             cout << "The Winning Number is "; 
             cout << winner2 << "\n\n";        //display winning number 
         } while (guessMax != -1);  //to end game
+        
+
     }
-    
-    while(choice!=4)
-    {
-        //Data Manipulation Start
-        cout<<"\n\nUser Information Menu\n";
-        cout<<"1) Display member list\n"
-                <<"2) Display games won/lost\n"
-                <<"3) Frequency of winning numbers\n"
-                <<"4) Quit\n"
-                <<"Choice: ";
-        cin>>choice;
-        //validate
-        tcatch(choice,1,4);
-        while(choice<1||choice>4)
+        //user info meu
+        else if(entry==3)
         {
+        while(choice!=4)
+        {
+            //Data Manipulation Start
+            cout<<"\n\nUser Information Menu\n";
+            cout<<"1) Display member list\n"
+                    <<"2) Display games won/lost\n"
+                    <<"3) Frequency of winning numbers\n"
+                    <<"4) Quit\n"
+                    <<"Choice: ";
             cin>>choice;
+            //validate
             tcatch(choice,1,4);
-        }
-        
-        //display member list
-        if(choice==1)
-        {
-            //declare iterator
-            map<int,string>::iterator iter=accts.begin();
-            //loop for display
-            while(iter!=accts.end())
+            while(choice<1||choice>4)
             {
-                cout<<"ID: "<<iter->first
-                        <<"\nName: "<<iter->second<<endl<<endl;
-                iter++;
+                cin>>choice;
+                tcatch(choice,1,4);
             }
-        }
-        
-        //display games won/lost
-        else if(choice==2)
-        {
-            player.dispGame();
-            player.dispRatio(game);
-        }
-        
-        //vector frequency
-        else if(choice==3)
-        {
-            //sort
-            std::sort(storeWinner.begin(),storeWinner.end());
-            //declare iterator
-            vector<int>::iterator vect;
-            //loop for each number
-            for(int i=0;i<36;i++)
+
+            //display member list
+            if(choice==1)
             {
-                //variables
-                int freq=0;
-                vect=storeWinner.begin();
-                //loop for frequency
-                while(vect!=storeWinner.end())
+                cout<<endl<<endl;
+                //declare iterator
+                map<int,string>::iterator iter=accts.begin();
+                //loop for display
+                while(iter!=accts.end())
                 {
-                    //if they match add freq
-                    if(i==*vect)
-                    {
-                        freq++;
-                    }
-                    vect++;
-                    //output
-                
+                    cout<<"ID: "<<iter->first
+                            <<"\nName: "<<iter->second<<endl<<endl;
+                    iter++;
                 }
-                cout<<"Number: "<<i<<" Frequency: "<<freq<<endl;
+            }
+
+            //display games won/lost
+            else if(choice==2)
+            {
+                cout<<endl<<endl;
+                //call to game result map
+                player.dispGame();
+                //win ratio
+                float winRatio=((winGames.size())/game-1)*100;
+                cout<<"\nWin ratio is "<<winRatio<<"%\n";
+                //lose ratio
+                float loseRatio=((loseGames.size()-1)/game)*100;
+                cout<<"Loss ratio is "<<loseRatio<<"%\n\n";
+            }
+
+            //vector frequency
+            else if(choice==3)
+            {
+                cout<<endl<<endl;
+                //sort
+                std::sort(storeWinner.begin(),storeWinner.end());
+                //declare iterator
+                vector<int>::iterator vect;
+                //loop for each number
+                for(int i=0;i<=36;i++)
+                {
+                    //variables
+                    int freq=0;
+                    vect=storeWinner.begin();
+                    //loop for frequency
+                    while(vect!=storeWinner.end())
+                    {
+                        //if they match add freq
+                        if(i==*vect)
+                        {
+                            freq++;
+                        }
+                        vect++;
+                    }
+                    //output
+                    cout<<"Number: "<<i<<" Frequency: "<<freq<<endl;
+                }
             }
         }
-    }
-        
-    //ending bank
+        }
+    }while(entry!=4);
+        //ending bank
         cout<<"Thank you for playing "<<accts[acctNum]<<".\n"
-                <<"Please cash out your remaining $"<<player.bankDisp()
-                <<" in chips with the cashier.\n";
+                <<"You have remaining $"<<player.bankDisp()
+                <<" in chips.\n";
+        
+        //print receipt
+        ofstream outputFile; //open
+        outputFile.open("Receipt.txt");
+        outputFile<<"Id Number: "<<player.getId()<<endl;
+        outputFile<<"Name: "<<accts[acctNum]<<endl;
+        outputFile<<"Bank Remaining: $"<<player.bankDisp()<<endl;
+        outputFile<<"\n\nThank You For Playing!\nPlease Take This Receipt"
+                <<" to One Of Our Cashiers.\n";
+        outputFile.close();
         
     //Exit stage right!
-    }
     return 0;}  //end
 
 //******************************
@@ -450,7 +479,7 @@ int bonus()
 //******************************
 //check for valid account
 //******************************
-int checkAcct(int valid[],int check, int size)
+int checkAcct(vector<int> &valid,int check, int size)
 {
     size=size-1;
     if(size<0)

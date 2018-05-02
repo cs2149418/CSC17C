@@ -32,6 +32,7 @@ public:
     void addBank(int); //add to bank
     void subBank(int); //subtract from bank
     float bankDisp();  //display bank
+    int getId();
 
     //container functions
     void addGame(int,string);  //add game

@@ -38,10 +38,6 @@ Player::Player(const Player& orig)
 //******************************
 Player::~Player() 
 {
-    for(map<int,string>::iterator it = games.begin(); it != games.end(); ++it)
-    { 
-        delete it->second;
-    }
     games.clear();
 }
 
@@ -83,6 +79,14 @@ void Player::subBank(int amount)
 float Player::bankDisp()
 {
     return bank;
+}
+
+//******************************
+//display ID
+//******************************
+int Player::getId()
+{
+    return id;
 }
 
 //******************************
@@ -144,5 +148,5 @@ void Player::dispRatio(int game)
     }
     //display
     float loseRatio=(count/game)*100;
-    cout<<"Your win ratio is "<<winRatio<<"%\n\n";
+    cout<<"Your loss ratio is "<<winRatio<<"%\n\n";
 }
