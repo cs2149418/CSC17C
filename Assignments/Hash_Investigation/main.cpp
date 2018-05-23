@@ -20,15 +20,29 @@
 #include <iostream>
 #include <string>
 #include <iomanip>
+#include <ctime>
+#include <string>
+#include <cmath>
 #include "GeneralHashFunctions.h"
 using namespace std;
 
+static const char alphanum[] =
+"abcdefghijklmnopqrstuvwxyz";
+int stringLength = sizeof(alphanum) - 1;
+char genRan()
+{
+    return alphanum[rand() % stringLength];
+}
+
 int main(int argc, char* argv[])
 {
-   string key = "abcdefghijklmnopqrstuvwxyz1234567890";
-
-   cout << "General Purpose Hash Function Algorithms Test" <<endl;
-   cout << "By Arash Partow - 2002        " <<endl;
+   srand(time(0));
+   
+   string key;
+   for(int i=0;i<8;i++)
+   {
+       key+=genRan();
+   }
    cout << "Key:     " <<key<<endl;
    cout << " 1. RS-Hash Function Value:   " <<setw(15)<< RSHash(key)   <<endl;
    cout << " 2. JS-Hash Function Value:   " <<setw(15)<< JSHash(key)   <<endl;
@@ -42,5 +56,5 @@ int main(int argc, char* argv[])
    cout << "10. BP-Hash Function Value:   " <<setw(15)<< BPHash(key)   <<endl;
    cout << "11. AP-Hash Function Value:   " <<setw(15)<< APHash(key)   <<endl;
 
-   return true;
+   return 0;
 }
